@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width", initial-scale="1.0", maximum-scale="1.0", user-scalable="no"/>
+		<meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+		<title>Carousel3D_Demo</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+		<style type="text/css">
+			@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,500,700');  
+			@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" );
+			
+			body
+			{
+				margin: 0;
+				padding:0; 
+			}
+			
+			canvas
+			{
+				width: 100%;
+   				height: 100%;
+			}
+
+			.sample_background
+			{
+				position: absolute;
+				left: 0%;
+				width: 100%;
+				height: 374%;
+				background-image: url('./images/Website_Sample_2025-01.png');
+				background-repeat:no-repeat;
+				background-size: 100% auto; 
+				opacity: 0.5;
+			}
+
+
+			#threeContainer
+			{
+				position: absolute;
+				top: 12%;
+				left: 50%;
+				width: 89%;
+				height: 80%;
+				transform: translate(-50%,0%);
+			}
+
+
+			@media screen and (max-width:1400px)/*平板(橫向)*/
+			{
+
+			}
+
+			@media screen and (max-width:900px)/*平板(直向)*/
+			{
+			
+			}
+
+			@media screen and (max-width:768px)/*手機*/
+			{
+				
+			}
+
+		</style>
+
+		<script type="importmap">
+			{
+			  "imports": {
+				"three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+				"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+			  }
+			}
+		</script>
+
+	</head>
+	
+	<body>  
+		<div class="sample_background"></div>
+		<div id="threeContainer"></div>
+		<script src="https://kit.fontawesome.com/28b78de879.js" crossorigin="anonymous"></script>
+		<script type="module" src="main.js"></script>
+    </body>
+
+</html>
