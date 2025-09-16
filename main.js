@@ -53,7 +53,7 @@ let plane, blurPlane, fillPlane;
 init();
 animate();
 EventListener();
-Camera_Inspector(camera,controls);
+//Camera_Inspector(camera,controls);
 
 
 
