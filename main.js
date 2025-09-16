@@ -31,9 +31,9 @@ const CAMERA_HEIGHT = 20;//必須高於模型，否則看不到
 const state = {
 	shadow: //影子
 	{
-		blur: 1.8,
+		blur: 1.2,
 		darkness: 1,
-		opacity: 1,
+		opacity: 0.5,
 	},
 	plane: //地板材質
 	{
