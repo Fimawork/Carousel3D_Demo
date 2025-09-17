@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import {CameraManager,UpdateCameraPosition,CameraDefaultPos, InputEvent,Camera_Inspector,ControlsTargetDefaultPos,SetDefaultCameraStatus,InstFBXLoader,InstGLTFLoader,FindMataterialByName,posData} from 'https://cdn.jsdelivr.net/gh/Fimawork/threejs_tools/fx_functions.js';
+import {CameraManager,UpdateCameraPosition, InputEvent,Camera_Inspector,SetDefaultCameraStatus,InstFBXLoader,InstGLTFLoader,FindMataterialByName,posData} from 'https://cdn.jsdelivr.net/gh/Fimawork/threejs_tools/fx_functions.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 
 //Outline
@@ -12,9 +12,28 @@ let scene, camera, renderer, stats, mixer, clock;
 let controls;
 let threeContainer = document.getElementById("threeContainer");
 
-const modelPosition=new THREE.Vector3(0,0,0);
+const modelPosition=new THREE.Vector3(60,0,0);
 const modelRotation=new THREE.Vector3(0,Math.PI, 0);
-const modeScale=0.1;
+const modeScale=0.15;
+
+const CameraDefaultPos=new THREE.Vector3(57,11,-12);
+const ControlsTargetDefaultPos=new THREE.Vector3(60,0,0);
+
+let carouselManu = new THREE.Object3D();
+let rotationTarget = new THREE.Object3D();
+const item_num=6;
+const divisionAngle = 2*Math.PI/item_num;//2*Math.PI為360度
+
+const quaternion_rotationTarget = new THREE.Quaternion();
+const quaternion_carouselManu = new THREE.Quaternion();
+
+let item_01 = new THREE.Object3D();
+let item_02 = new THREE.Object3D();
+let item_03 = new THREE.Object3D();
+let item_04 = new THREE.Object3D();
+let item_05 = new THREE.Object3D();
+let item_06 = new THREE.Object3D();
+
 
 let mousePos = { x: undefined, y: undefined };
 let hoverPos = { x: undefined, y: undefined };
@@ -61,7 +80,7 @@ function init()
 {
   scene = new THREE.Scene();
   //scene.background= new THREE.Color( 0xFFFFFF );
-  camera = new THREE.PerspectiveCamera( 50, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
+  camera = new THREE.PerspectiveCamera( 55, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
   renderer = new THREE.WebGLRenderer({ antialias: true });
   //renderer.setSize( threeContainer.clientWidth, threeContainer.clientHeight );//非全螢幕比例設定
 
@@ -69,20 +88,19 @@ function init()
   renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
 
   renderer.setClearColor(0x000000, 0.0);//需加入這一條，否則看不到CSS的底圖
-  //renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  //renderer.toneMappingExposure = 0.5;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.9;
   //document.body.appendChild( renderer.domElement );
   threeContainer.appendChild( renderer.domElement );
 
-  const CameraDefaultPos=new THREE.Vector3(-6.311,12.489,-8.060);
-  const ControlsTargetDefaultPos=new THREE.Vector3(-0.966,1.459,-0.701);
+  
   camera.position.copy(CameraDefaultPos);
   posData[0]={ camera_pos:CameraDefaultPos, controlsTarget_pos:ControlsTargetDefaultPos};
 
 
   ///利用座標設定旋轉中心及鏡頭焦點，camera不須另外設定初始角度
   controls = new OrbitControls( camera, renderer.domElement );
-  controls.enablePan = true;//右鍵平移效果
+  controls.enablePan = false;//右鍵平移效果
   controls.panSpeed = 0.4;
   controls.enableDamping = true;
   controls.dampingFactor =0.05;
@@ -159,6 +177,7 @@ function init()
 	shadowCamera.rotation.x = Math.PI / 2; // get the camera to look up
 	shadowGroup.add( shadowCamera );
 
+	shadowGroup.position.set(60,0,0);//整組移動
 
 	// like MeshDepthMaterial, but goes from black to transparent
 	depthMaterial = new THREE.MeshDepthMaterial();
@@ -190,12 +209,24 @@ function init()
 	fillPlane.material.color = new THREE.Color( state.plane.color );
 	fillPlane.material.opacity = state.plane.opacity;
 
- 
+	carouselManu.add(item_01).add(item_02).add(item_03).add(item_04).add(item_05).add(item_06);
+	item_01.rotation.y=divisionAngle;
+	item_02.rotation.y=divisionAngle*2;
+	item_03.rotation.y=divisionAngle*3;
+	item_04.rotation.y=divisionAngle*4;
+	item_05.rotation.y=divisionAngle*5;
+	item_06.rotation.y=divisionAngle*6;
+	scene.add(carouselManu);
 
   ///主要物件
 	const defaultScenes = 
   [
-    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"FixedAngleWithSlidePanel",null, scene);; resolve(); }, 10)),//Loading頁面   
+    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 100)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 200)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_03",item_03, scene); resolve(); }, 300)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 400)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 500)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 600)),   
 	];
 
 	async function SetupDefaultScene() 
@@ -241,6 +272,8 @@ function animate()
 
   	UpdateCameraPosition(camera,controls);
   	RaycastFunction();
+
+	UpdateRotationManu();
 }
 
 function ShaderTargetTextureRendering()
@@ -386,6 +419,31 @@ function RaycastFunction()
 	{
 		INTERSECTED = null;
 	}
+}
+
+function UpdateRotationManu()
+{
+	
+	quaternion_rotationTarget.setFromEuler(rotationTarget.rotation);
+
+	if(quaternion_carouselManu.angleTo(quaternion_rotationTarget)>0.01)
+    {
+		quaternion_carouselManu.slerp(quaternion_rotationTarget,0.009);
+    } 
+
+	carouselManu.rotation.setFromQuaternion(quaternion_carouselManu);
+    
+}
+
+ ManuRotate();
+
+	function ManuRotate()
+{
+
+		rotationTarget.rotation.y+=divisionAngle;
+	
+		setTimeout(() => {ManuRotate();}, 15000);//1000=1sec}
+	
 }
 
 
