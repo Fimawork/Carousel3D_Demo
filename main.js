@@ -8,15 +8,17 @@ import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
 
+
+
 let scene, camera, renderer, stats, mixer, clock;
 let controls;
 let threeContainer = document.getElementById("threeContainer");
 
 const modelPosition=new THREE.Vector3(60,0,0);
 const modelRotation=new THREE.Vector3(0,Math.PI, 0);
-const modeScale=0.15;
+const modeScale=0.12;
 
-const CameraDefaultPos=new THREE.Vector3(57,11,-12);
+const CameraDefaultPos=new THREE.Vector3(59,12,-12);
 const ControlsTargetDefaultPos=new THREE.Vector3(60,0,0);
 
 let carouselManu = new THREE.Object3D();
@@ -67,7 +69,11 @@ let shadowGroup, renderTarget, renderTargetBlur, shadowCamera, depthMaterial, ho
 
 let plane, blurPlane, fillPlane;
 
+let item_list=[];
 
+const hold_time=9;
+
+let item_index=0;
 
 init();
 animate();
@@ -80,7 +86,7 @@ function init()
 {
   scene = new THREE.Scene();
   //scene.background= new THREE.Color( 0xFFFFFF );
-  camera = new THREE.PerspectiveCamera( 55, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
+  camera = new THREE.PerspectiveCamera( 45, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
   renderer = new THREE.WebGLRenderer({ antialias: true });
   //renderer.setSize( threeContainer.clientWidth, threeContainer.clientHeight );//非全螢幕比例設定
 
@@ -89,7 +95,7 @@ function init()
 
   renderer.setClearColor(0x000000, 0.0);//需加入這一條，否則看不到CSS的底圖
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.9;
+  renderer.toneMappingExposure = 1;
   //document.body.appendChild( renderer.domElement );
   threeContainer.appendChild( renderer.domElement );
 
@@ -210,23 +216,28 @@ function init()
 	fillPlane.material.opacity = state.plane.opacity;
 
 	carouselManu.add(item_01).add(item_02).add(item_03).add(item_04).add(item_05).add(item_06);
-	item_01.rotation.y=divisionAngle;
-	item_02.rotation.y=divisionAngle*2;
-	item_03.rotation.y=divisionAngle*3;
-	item_04.rotation.y=divisionAngle*4;
-	item_05.rotation.y=divisionAngle*5;
-	item_06.rotation.y=divisionAngle*6;
+	item_01.rotation.y=divisionAngle*6;
+	item_02.rotation.y=divisionAngle*5;
+	item_03.rotation.y=divisionAngle*4;
+	item_04.rotation.y=divisionAngle*3;
+	item_05.rotation.y=divisionAngle*2;
+	item_06.rotation.y=divisionAngle*1;
 	scene.add(carouselManu);
 
   ///主要物件
 	const defaultScenes = 
   [
-    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 100)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 200)),
+    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 100)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 200)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_03",item_03, scene); resolve(); }, 300)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 400)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 500)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 600)),   
+
+	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup(); resolve(); }, 700)), 
+	
+
+	() => new Promise((resolve) => setTimeout(() => { ManuRotate(); resolve(); },hold_time*1000)) 
 	];
 
 	async function SetupDefaultScene() 
@@ -241,6 +252,16 @@ function init()
 
 	SetupDefaultScene();
 
+
+	function SetupItemGroup()
+	{
+		item_list.push(item_01);
+		item_list.push(item_02);
+		item_list.push(item_03);
+		item_list.push(item_04);
+		item_list.push(item_05);
+		item_list.push(item_06);
+	}
 
   ///EventListener
   window.addEventListener( 'resize', onWindowResize );  
@@ -423,27 +444,48 @@ function RaycastFunction()
 
 function UpdateRotationManu()
 {
-	
 	quaternion_rotationTarget.setFromEuler(rotationTarget.rotation);
 
 	if(quaternion_carouselManu.angleTo(quaternion_rotationTarget)>0.01)
     {
-		quaternion_carouselManu.slerp(quaternion_rotationTarget,0.009);
+		quaternion_carouselManu.slerp(quaternion_rotationTarget,0.015);
     } 
 
-	carouselManu.rotation.setFromQuaternion(quaternion_carouselManu);
-    
+	carouselManu.rotation.setFromQuaternion(quaternion_carouselManu);   
 }
 
- ManuRotate();
-
-	function ManuRotate()
+function ManuRotate()
 {
+	rotationTarget.rotation.y+=divisionAngle;
+	item_index++;
 
-		rotationTarget.rotation.y+=divisionAngle;
-	
-		setTimeout(() => {ManuRotate();}, 15000);//1000=1sec}
-	
+	console.log(item_index);
+
+	if(item_index>item_num-1)
+	{
+		item_index=0;
+	}
+
+	setTimeout(() => {ManuRotate();}, hold_time*1000);//1000=1sec}
+
+	setTimeout(() => {ShowItem();}, 1000);//1000=1sec}
+
+	function ShowItem()
+	{
+		for(let i=0;i<item_list.length;i++)
+		{
+			if(i===item_index)
+			{
+				item_list[i].visible=true;
+			}
+
+			else
+			{
+				item_list[i].visible=false;
+			}
+		}
+	}
+
 }
 
 
