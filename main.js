@@ -87,7 +87,10 @@ function init()
 {
   scene = new THREE.Scene();
   //scene.background= new THREE.Color( 0xFFFFFF );
-  camera = new THREE.PerspectiveCamera( 45, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
+
+  let newFOV=threeContainer.clientWidth / threeContainer.clientHeight<1.5?75:45;
+  //console.log(newFOV);
+  camera = new THREE.PerspectiveCamera( newFOV, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
   renderer = new THREE.WebGLRenderer({ antialias: true });
   //renderer.setSize( threeContainer.clientWidth, threeContainer.clientHeight );//非全螢幕比例設定
 
