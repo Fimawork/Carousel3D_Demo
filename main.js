@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {CameraManager,UpdateCameraPosition, InputEvent,Camera_Inspector,SetDefaultCameraStatus,InstFBXLoader,InstGLTFLoader,FindMataterialByName,posData} from 'https://cdn.jsdelivr.net/gh/Fimawork/threejs_tools/fx_functions.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 //Outline
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
@@ -80,7 +81,7 @@ animate();
 EventListener();
 //Camera_Inspector(camera,controls);
 
-
+//Material_Inspector(item_01);
 
 function init()
 {
@@ -234,7 +235,7 @@ function init()
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 500)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 600)),   
 
-	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup(); resolve(); }, 700)), 
+	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();Revised_Materials();resolve(); }, 700)), 
 	
 
 	() => new Promise((resolve) => setTimeout(() => { ManuRotate(); resolve(); },hold_time*1000)) 
@@ -278,8 +279,18 @@ function init()
 function onWindowResize() 
 {
     camera.aspect = threeContainer.clientWidth/threeContainer.clientHeight;//非全螢幕比例設定
-		camera.updateProjectionMatrix();
+	camera.updateProjectionMatrix();
     renderer.setSize( threeContainer.clientWidth, threeContainer.clientHeight);
+
+	if(camera.aspect<1.2)
+	{
+		camera.fov=75;
+	}
+
+	else
+	{
+		camera.fov=45;
+	}
 }
 
 function animate() 
@@ -366,11 +377,21 @@ function EventListener()
         case "Space":
         //MoveModelOFF();
 
+		console.log(item_01);
+
+		item_01.traverse( function ( object ) {
+								if ( object.isMesh )
+								{
+									console.log(object.material.map);
+								}
+							});
+
         break;
 
         case "ArrowDown":
 
        //console.log(scene);
+	   
 
 
         break;
@@ -459,8 +480,6 @@ function ManuRotate()
 	rotationTarget.rotation.y+=divisionAngle;
 	item_index++;
 
-	console.log(item_index);
-
 	if(item_index>item_num-1)
 	{
 		item_index=0;
@@ -487,5 +506,85 @@ function ManuRotate()
 	}
 
 }
+
+
+function Material_Inspector(target)
+{
+	const gui = new GUI();
+
+	const targetMaterial= new THREE.MeshStandardMaterial();
+
+	let thisTintColor;
+
+	target.traverse( function ( object ) {
+		if ( object.isMesh )
+		{
+			targetMaterial=object.material;
+			thisTintColor=object.material.color;
+		}
+	});
+
+	gui.addColor( targetMaterial, 'color' ).onChange( function ( ) {UpdateMaterial()} );
+
+	gui.add( targetMaterial, 'roughness', 0, 1, 0.01 ).onChange( function ( ) {UpdateMaterial()} );
+	gui.add( targetMaterial, 'metalness', 0, 1, 0.01 ).onChange(function ( ) {UpdateMaterial()});
+
+	function UpdateMaterial()
+    {
+    	target.traverse( function ( object ) {
+			if ( object.isMesh )
+			{
+				object.material=targetMaterial;
+				object.material.color.set(thisTintColor);
+			}
+		});
+    }
+}
+
+function Material_Editor(target,tint_color,roughness_value,metalness_value,texture_src,normalMap_src,normalMap_scale,repeat,offset)
+{
+	const targetMaterial= new THREE.MeshStandardMaterial();
+	const loader = new THREE.TextureLoader();
+	const texture = loader.load(texture_src);
+
+	targetMaterial.color.set(tint_color);
+	targetMaterial.roughness=roughness_value;
+	targetMaterial.metalness=metalness_value;
+	
+	if(texture_src!=null)
+	{
+		targetMaterial.map = texture;
+	}
+
+	if(normalMap_src!=null)
+	{
+		targetMaterial.normalMap = loader.load(normalMap_src);
+		targetMaterial.normalScale.set(normalMap_scale, normalMap_scale);  
+	}
+	
+	targetMaterial.map.wrapS = THREE.RepeatWrapping;
+	targetMaterial.map.wrapT = THREE.RepeatWrapping;
+	targetMaterial.map.repeat.set(repeat.x, repeat.y);
+	targetMaterial.map.offset.set(offset.x, offset.y);
+
+
+	targetMaterial.needsUpdate = true;
+
+	target.traverse( function ( object ) {
+	if ( object.isMesh )
+		{	
+			object.material=targetMaterial;
+		}
+	});
+}
+
+//Revised_Materials();
+
+function Revised_Materials()
+{
+	Material_Editor(item_01,0xff9900,0.1,0.9,'./textures/Patina copper_200_DB.jpg','./textures/Patina copper_200_DB.jpg',2,new THREE.Vector2(5,5),new THREE.Vector2(0,0));
+}
+
+
 
 
