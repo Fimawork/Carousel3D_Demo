@@ -8,7 +8,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //Outline
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-
+import {param_01} from './material_param.js';
 
 
 let scene, camera, renderer, stats, mixer, clock;
@@ -89,7 +89,7 @@ function init()
   //scene.background= new THREE.Color( 0xFFFFFF );
 
   let newFOV=threeContainer.clientWidth / threeContainer.clientHeight<1.5?75:45;
-  //console.log(newFOV);
+  console.log(newFOV);
   camera = new THREE.PerspectiveCamera( newFOV, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
   renderer = new THREE.WebGLRenderer({ antialias: true });
   //renderer.setSize( threeContainer.clientWidth, threeContainer.clientHeight );//非全螢幕比例設定
@@ -231,14 +231,14 @@ function init()
   ///主要物件
 	const defaultScenes = 
   [
-    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 100)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 200)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_03",item_03, scene); resolve(); }, 300)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 400)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 500)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 600)),   
-
-	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();Revised_Materials();resolve(); }, 700)), 
+    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 50)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 100)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_03",item_03, scene); resolve(); }, 150)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 200)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 250)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 300)),   
+	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 450)), 
+	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 500)), 
 	
 
 	() => new Promise((resolve) => setTimeout(() => { ManuRotate(); resolve(); },hold_time*1000)) 
@@ -265,6 +265,12 @@ function init()
 		item_list.push(item_04);
 		item_list.push(item_05);
 		item_list.push(item_06);
+
+		item_02.visible=false;
+		item_03.visible=false;
+		item_04.visible=false;
+		item_05.visible=false;
+		item_06.visible=false;
 	}
 
   ///EventListener
@@ -284,16 +290,6 @@ function onWindowResize()
     camera.aspect = threeContainer.clientWidth/threeContainer.clientHeight;//非全螢幕比例設定
 	camera.updateProjectionMatrix();
     renderer.setSize( threeContainer.clientWidth, threeContainer.clientHeight);
-
-	if(camera.aspect<1.2)
-	{
-		camera.fov=75;
-	}
-
-	else
-	{
-		camera.fov=45;
-	}
 }
 
 function animate() 
@@ -480,6 +476,7 @@ function UpdateRotationManu()
 
 function ManuRotate()
 {
+	CameraManager(0);
 	rotationTarget.rotation.y+=divisionAngle;
 	item_index++;
 
@@ -544,33 +541,35 @@ function Material_Inspector(target)
     }
 }
 
-function Material_Editor(target,tint_color,roughness_value,metalness_value,texture_src,normalMap_src,normalMap_scale,repeat,offset)
+function Material_Editor(target,param)
 {
 	const targetMaterial= new THREE.MeshStandardMaterial();
-	const loader = new THREE.TextureLoader();
-	const texture = loader.load(texture_src);
-
-	targetMaterial.color.set(tint_color);
-	targetMaterial.roughness=roughness_value;
-	targetMaterial.metalness=metalness_value;
 	
-	if(texture_src!=null)
+
+	targetMaterial.color.set(param.color);
+	targetMaterial.roughness=param.roughness;
+	targetMaterial.metalness=param.metalness;
+	
+	if(param.texture_img!=null)
 	{
-		targetMaterial.map = texture;
+		const loader = new THREE.TextureLoader();
+		targetMaterial.map = loader.load(param.texture_img);
 	}
 
-	if(normalMap_src!=null)
+	if(param.normalMap_img!=null)
 	{
-		targetMaterial.normalMap = loader.load(normalMap_src);
-		targetMaterial.normalScale.set(normalMap_scale, normalMap_scale);  
+		const loader_normal = new THREE.TextureLoader();
+		targetMaterial.normalMap = loader_normal.load(param.normalMap_img);
+		targetMaterial.normalScale.set(param.normal_scale, param.normal_scale);  
 	}
 	
 	targetMaterial.map.wrapS = THREE.RepeatWrapping;
 	targetMaterial.map.wrapT = THREE.RepeatWrapping;
-	targetMaterial.map.repeat.set(repeat.x, repeat.y);
-	targetMaterial.map.offset.set(offset.x, offset.y);
-
-
+	targetMaterial.map.repeat.set(param.texture_repeat_x, param.texture_repeat_y);
+	targetMaterial.map.offset.set(param.texture_offset_x, param.texture_offset_y);
+	targetMaterial.transparent= param.transparent;
+	targetMaterial.alphaHash= param.alphahash;
+	targetMaterial.opacity = param.opacity;
 	targetMaterial.needsUpdate = true;
 
 	target.traverse( function ( object ) {
@@ -585,7 +584,7 @@ function Material_Editor(target,tint_color,roughness_value,metalness_value,textu
 
 function Revised_Materials()
 {
-	Material_Editor(item_01,0xff9900,0.1,0.9,'./textures/Patina copper_200_DB.jpg','./textures/Patina copper_200_DB.jpg',2,new THREE.Vector2(5,5),new THREE.Vector2(0,0));
+	Material_Editor(item_01,param_01);
 }
 
 
