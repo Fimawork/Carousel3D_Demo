@@ -8,18 +8,21 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //Outline
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import {param_01} from './material_param.js';
+import {param_01,param_02} from './material_param.js';
 
 
-let scene, camera, renderer, stats, mixer, clock;
+let scene, camera, renderer, stats, mixer;
 let controls;
+let idleTime=0;
 let threeContainer = document.getElementById("threeContainer");
+
+const clock = new THREE.Clock();
 
 const modelPosition=new THREE.Vector3(60,0,0);
 const modelRotation=new THREE.Vector3(0,Math.PI, 0);
 const modeScale=0.12;
 
-const CameraDefaultPos=new THREE.Vector3(59,12,-12);
+const CameraDefaultPos=new THREE.Vector3(57,12,-12);
 const ControlsTargetDefaultPos=new THREE.Vector3(60,0,0);
 
 let carouselManu = new THREE.Object3D();
@@ -72,7 +75,7 @@ let plane, blurPlane, fillPlane;
 
 let item_list=[];
 
-const hold_time=9;
+const hold_time=6;
 
 let item_index=0;
 
@@ -89,7 +92,7 @@ function init()
   //scene.background= new THREE.Color( 0xFFFFFF );
 
   let newFOV=threeContainer.clientWidth / threeContainer.clientHeight<1.5?75:45;
-  console.log(newFOV);
+
   camera = new THREE.PerspectiveCamera( newFOV, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
   renderer = new THREE.WebGLRenderer({ antialias: true });
   //renderer.setSize( threeContainer.clientWidth, threeContainer.clientHeight );//非全螢幕比例設定
@@ -121,13 +124,13 @@ function init()
 
   ///hdri 環境光源
   new RGBELoader()
-					.setPath( 'textures/hdri/' )
-					.load( 'studio_small_09_2k.hdr', function ( texture ) {
+		.setPath( 'textures/hdri/' )
+		.load( 'royal_esplanade_1k.hdr', function ( texture ) {
 
-						texture.mapping = THREE.EquirectangularReflectionMapping;
+		texture.mapping = THREE.EquirectangularReflectionMapping;
 
-						//scene.background = texture;
-						scene.environment = texture;
+		//scene.background = texture;
+		scene.environment = texture;
 
 	} );
 
@@ -231,7 +234,7 @@ function init()
   ///主要物件
 	const defaultScenes = 
   [
-    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 50)),
+    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_Type_A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 50)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 100)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_03",item_03, scene); resolve(); }, 150)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 200)),
@@ -241,7 +244,7 @@ function init()
 	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 500)), 
 	
 
-	() => new Promise((resolve) => setTimeout(() => { ManuRotate(); resolve(); },hold_time*1000)) 
+	() => new Promise((resolve) => setTimeout(() => { idleTime=0 ;resolve(); },hold_time*1000)) 
 	];
 
 	async function SetupDefaultScene() 
@@ -273,14 +276,18 @@ function init()
 		item_06.visible=false;
 	}
 
-  ///EventListener
-  window.addEventListener( 'resize', onWindowResize );  
-  window.addEventListener("pointerdown", (event) => {
+ 	///EventListener
+  	window.addEventListener( 'resize', onWindowResize );  
+
+  	window.addEventListener("pointerdown", (event) => {
     InputEvent();
      mousePos = { x: event.clientX, y: event.clientY };
 		onPointerMove(event);//改以點擊作為Raycast判斷的時間點，改善觸控螢幕誤判狀況
-  });
-  window.addEventListener("wheel", (event) => {InputEvent();});
+		idleTime=0;
+  	});
+
+	window.addEventListener( 'pointermove', function(e) {idleTime=0;});
+  	window.addEventListener("wheel", (event) => {InputEvent();idleTime=0;});
 
 }
 
@@ -305,64 +312,26 @@ function animate()
   	RaycastFunction();
 
 	UpdateRotationManu();
-}
 
-function ShaderTargetTextureRendering()
-{
-	// remove the background
-	const initialBackground = scene.background;
-	scene.background = null;
+	
 
-	// force the depthMaterial to everything
-	scene.overrideMaterial = depthMaterial;
+	const delta = clock.getDelta();
 
-	// set renderer clear alpha
-	const initialClearAlpha = renderer.getClearAlpha();
-	renderer.setClearAlpha( 0 );
+	if ( mixer ) mixer.update( delta );
 
-	// render to the render target to get the depths
-	renderer.setRenderTarget( renderTarget );
-	renderer.render( scene, shadowCamera );
 
-	// and reset the override material
-	scene.overrideMaterial = null;
+	idleTime+=delta;
 
-	blurShadow( state.shadow.blur );
-
-	// a second pass to reduce the artifacts
-	// (0.4 is the minimum blur amount so that the artifacts are gone)
-	blurShadow( state.shadow.blur * 0.4 );
-
-	// reset and render the normal scene
-	renderer.setRenderTarget( null );
-	renderer.setClearAlpha( initialClearAlpha );
-	scene.background = initialBackground;
-
-	function blurShadow( amount ) 
+	if(idleTime>hold_time)
 	{
+		idleTime=0;
 
-		blurPlane.visible = true;
-
-		// blur horizontally and draw in the renderTargetBlur
-		blurPlane.material = horizontalBlurMaterial;
-		blurPlane.material.uniforms.tDiffuse.value = renderTarget.texture;
-		horizontalBlurMaterial.uniforms.h.value = amount * 1 / 256;
-
-		renderer.setRenderTarget( renderTargetBlur );
-		renderer.render( blurPlane, shadowCamera );
-
-		// blur vertically and draw in the main renderTarget
-		blurPlane.material = verticalBlurMaterial;
-		blurPlane.material.uniforms.tDiffuse.value = renderTargetBlur.texture;
-		verticalBlurMaterial.uniforms.v.value = amount * 1 / 256;
-
-		renderer.setRenderTarget( renderTarget );
-		renderer.render( blurPlane, shadowCamera );
-
-		blurPlane.visible = false;
-
+		ManuRotate();
 	}
+
 }
+
+
 
 
 
@@ -378,12 +347,6 @@ function EventListener()
 
 		console.log(item_01);
 
-		item_01.traverse( function ( object ) {
-								if ( object.isMesh )
-								{
-									console.log(object.material.map);
-								}
-							});
 
         break;
 
@@ -419,9 +382,7 @@ function EventListener()
   });
 
 
-  window.addEventListener( 'pointermove', function(e) {
-
-  });
+ 
 }
 
 //////Raycaster工具//////
@@ -480,14 +441,15 @@ function ManuRotate()
 	rotationTarget.rotation.y+=divisionAngle;
 	item_index++;
 
+
 	if(item_index>item_num-1)
 	{
 		item_index=0;
 	}
 
-	setTimeout(() => {ManuRotate();}, hold_time*1000);//1000=1sec}
+	//setTimeout(() => {ShowItem();}, 1000);//1000=1sec}
 
-	setTimeout(() => {ShowItem();}, 1000);//1000=1sec}
+	ShowItem();
 
 	function ShowItem()
 	{
@@ -500,11 +462,10 @@ function ManuRotate()
 
 			else
 			{
-				item_list[i].visible=false;
+				setTimeout(() => {item_list[i].visible=false;}, 1000);//1000=1sec}
 			}
 		}
 	}
-
 }
 
 
@@ -545,7 +506,6 @@ function Material_Editor(target,param)
 {
 	const targetMaterial= new THREE.MeshStandardMaterial();
 	
-
 	targetMaterial.color.set(param.color);
 	targetMaterial.roughness=param.roughness;
 	targetMaterial.metalness=param.metalness;
@@ -554,6 +514,10 @@ function Material_Editor(target,param)
 	{
 		const loader = new THREE.TextureLoader();
 		targetMaterial.map = loader.load(param.texture_img);
+		targetMaterial.map.wrapS = THREE.RepeatWrapping;
+		targetMaterial.map.wrapT = THREE.RepeatWrapping;
+		targetMaterial.map.repeat.set(param.texture_repeat_x, param.texture_repeat_y);
+		targetMaterial.map.offset.set(param.texture_offset_x, param.texture_offset_y);
 	}
 
 	if(param.normalMap_img!=null)
@@ -563,17 +527,14 @@ function Material_Editor(target,param)
 		targetMaterial.normalScale.set(param.normal_scale, param.normal_scale);  
 	}
 	
-	targetMaterial.map.wrapS = THREE.RepeatWrapping;
-	targetMaterial.map.wrapT = THREE.RepeatWrapping;
-	targetMaterial.map.repeat.set(param.texture_repeat_x, param.texture_repeat_y);
-	targetMaterial.map.offset.set(param.texture_offset_x, param.texture_offset_y);
+	
 	targetMaterial.transparent= param.transparent;
 	targetMaterial.alphaHash= param.alphahash;
 	targetMaterial.opacity = param.opacity;
 	targetMaterial.needsUpdate = true;
 
 	target.traverse( function ( object ) {
-	if ( object.isMesh )
+		if ( object.isMesh )
 		{	
 			object.material=targetMaterial;
 		}
@@ -584,7 +545,69 @@ function Material_Editor(target,param)
 
 function Revised_Materials()
 {
-	Material_Editor(item_01,param_01);
+	Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
+	Material_Editor(scene.getObjectByName("Shell_Body"),param_01);
+	Material_Editor(scene.getObjectByName("Shell_Pattern_Right"),param_02);
+	Material_Editor(scene.getObjectByName("Shell_Pattern_Left"),param_02);
+}
+
+
+///影子功能
+function ShaderTargetTextureRendering()
+{
+	// remove the background
+	const initialBackground = scene.background;
+	scene.background = null;
+
+	// force the depthMaterial to everything
+	scene.overrideMaterial = depthMaterial;
+
+	// set renderer clear alpha
+	const initialClearAlpha = renderer.getClearAlpha();
+	renderer.setClearAlpha( 0 );
+
+	// render to the render target to get the depths
+	renderer.setRenderTarget( renderTarget );
+	renderer.render( scene, shadowCamera );
+
+	// and reset the override material
+	scene.overrideMaterial = null;
+
+	blurShadow( state.shadow.blur );
+
+	// a second pass to reduce the artifacts
+	// (0.4 is the minimum blur amount so that the artifacts are gone)
+	blurShadow( state.shadow.blur * 0.4 );
+
+	// reset and render the normal scene
+	renderer.setRenderTarget( null );
+	renderer.setClearAlpha( initialClearAlpha );
+	scene.background = initialBackground;
+
+	function blurShadow( amount ) 
+	{
+
+		blurPlane.visible = true;
+
+		// blur horizontally and draw in the renderTargetBlur
+		blurPlane.material = horizontalBlurMaterial;
+		blurPlane.material.uniforms.tDiffuse.value = renderTarget.texture;
+		horizontalBlurMaterial.uniforms.h.value = amount * 1 / 256;
+
+		renderer.setRenderTarget( renderTargetBlur );
+		renderer.render( blurPlane, shadowCamera );
+
+		// blur vertically and draw in the main renderTarget
+		blurPlane.material = verticalBlurMaterial;
+		blurPlane.material.uniforms.tDiffuse.value = renderTargetBlur.texture;
+		verticalBlurMaterial.uniforms.v.value = amount * 1 / 256;
+
+		renderer.setRenderTarget( renderTarget );
+		renderer.render( blurPlane, shadowCamera );
+
+		blurPlane.visible = false;
+
+	}
 }
 
 
