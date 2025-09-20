@@ -36,7 +36,7 @@ export const param_02 = {
 export const param_03 = {
 	color:0xcc991b,
     roughness:0.40,
-    metalness:0.72,
+    metalness:0.9,
     texture_img:'./textures/yan-ots-UuBR5kbvt4Y-unsplash.jpg',
     texture_repeat_x:5,
     texture_repeat_y:1,
@@ -53,7 +53,7 @@ export const param_03 = {
 export const param_04 = {
 	color:0xcc991b,
     roughness:0.40,
-    metalness:0.72,
+    metalness:0.9,
     texture_img:'./textures/yan-ots-UuBR5kbvt4Y-unsplash.jpg',
     texture_repeat_x:0.5,
     texture_repeat_y:0.5,
