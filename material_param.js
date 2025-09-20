@@ -34,9 +34,9 @@ export const param_02 = {
 
 
 export const param_03 = {
-	color:0x919284,
-    roughness:0.3,
-    metalness:1,
+	color:0xcc991b,
+    roughness:0.40,
+    metalness:0.72,
     texture_img:'./textures/yan-ots-UuBR5kbvt4Y-unsplash.jpg',
     texture_repeat_x:5,
     texture_repeat_y:1,
@@ -51,12 +51,12 @@ export const param_03 = {
 
 
 export const param_04 = {
-	color:0x919284,
-    roughness:0.3,
-    metalness:1,
+	color:0xcc991b,
+    roughness:0.40,
+    metalness:0.72,
     texture_img:'./textures/yan-ots-UuBR5kbvt4Y-unsplash.jpg',
-    texture_repeat_x:5,
-    texture_repeat_y:1,
+    texture_repeat_x:0.5,
+    texture_repeat_y:0.5,
     texture_offset_x:0,
     texture_offset_y:0,
     normalMap_img:null,

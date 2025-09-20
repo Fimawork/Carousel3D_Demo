@@ -53,6 +53,8 @@ const PLANE_WIDTH = 100;
 const PLANE_HEIGHT = 100;
 const CAMERA_HEIGHT = 20;//必須高於模型，否則看不到
 
+let isRotateOn=false;
+
 const state = {
 	shadow: //影子
 	{
@@ -314,21 +316,22 @@ function animate()
 
 	UpdateRotationManu();
 
-	
-
 	const delta = clock.getDelta();
 
 	if ( mixer ) mixer.update( delta );
 
-
-	idleTime+=delta;
-
-	if(idleTime>hold_time)
+	if(!isRotateOn)
 	{
-		idleTime=0;
+		idleTime+=delta;
 
-		ManuRotate();
+		if(idleTime>hold_time)
+		{
+			idleTime=0;
+
+			ManuRotate();
+		}
 	}
+	
 
 }
 
@@ -431,7 +434,13 @@ function UpdateRotationManu()
 	if(quaternion_carouselManu.angleTo(quaternion_rotationTarget)>0.01)
     {
 		quaternion_carouselManu.slerp(quaternion_rotationTarget,0.015);
+		isRotateOn=true;
     } 
+
+	else
+	{
+		isRotateOn=false;
+	}
 
 	carouselManu.rotation.setFromQuaternion(quaternion_carouselManu);   
 }
@@ -511,7 +520,7 @@ function Revised_Materials()
 	Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
 	Material_Editor(scene.getObjectByName("Shell_Body"),param_02);
 	Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
-	Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_03);
+	Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_04);
 }
 
 
