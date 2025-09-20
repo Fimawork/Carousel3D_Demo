@@ -8,7 +8,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //Outline
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import {param_01,param_02} from './material_param.js';
+import {param_01,param_02,param_03,param_04} from './material_param.js';
 
 
 let scene, camera, renderer, stats, mixer;
@@ -22,7 +22,7 @@ const modelPosition=new THREE.Vector3(60,0,0);
 const modelRotation=new THREE.Vector3(0,Math.PI, 0);
 const modeScale=0.12;
 
-const CameraDefaultPos=new THREE.Vector3(57,12,-12);
+const CameraDefaultPos=new THREE.Vector3(66,12,-12);
 const ControlsTargetDefaultPos=new THREE.Vector3(60,0,0);
 
 let carouselManu = new THREE.Object3D();
@@ -91,7 +91,7 @@ function init()
   scene = new THREE.Scene();
   //scene.background= new THREE.Color( 0xFFFFFF );
 
-  let newFOV=threeContainer.clientWidth / threeContainer.clientHeight<1.5?75:45;
+  let newFOV=threeContainer.clientWidth / threeContainer.clientHeight<1.5?72:45;
 
   camera = new THREE.PerspectiveCamera( newFOV, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -102,7 +102,7 @@ function init()
 
   renderer.setClearColor(0x000000, 0.0);//需加入這一條，否則看不到CSS的底圖
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1;
+  renderer.toneMappingExposure = 0.75;
   //document.body.appendChild( renderer.domElement );
   threeContainer.appendChild( renderer.domElement );
 
@@ -113,7 +113,7 @@ function init()
 
   ///利用座標設定旋轉中心及鏡頭焦點，camera不須另外設定初始角度
   controls = new OrbitControls( camera, renderer.domElement );
-  controls.enablePan = false;//右鍵平移效果
+  controls.enablePan = true;//右鍵平移效果
   controls.panSpeed = 0.4;
   controls.enableDamping = true;
   controls.dampingFactor =0.05;
@@ -125,7 +125,7 @@ function init()
   ///hdri 環境光源
   new RGBELoader()
 		.setPath( 'textures/hdri/' )
-		.load( 'royal_esplanade_1k.hdr', function ( texture ) {
+		.load( 'brown_photostudio_02_1k.hdr', function ( texture ) {
 
 		texture.mapping = THREE.EquirectangularReflectionMapping;
 
@@ -235,12 +235,13 @@ function init()
 	const defaultScenes = 
   [
     () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_Type_A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 50)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20220715.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 100)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 100)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_03",item_03, scene); resolve(); }, 150)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 200)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 250)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 300)),   
 	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 450)), 
+	
 	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 500)), 
 	
 
@@ -502,53 +503,15 @@ function Material_Inspector(target)
     }
 }
 
-function Material_Editor(target,param)
-{
-	const targetMaterial= new THREE.MeshStandardMaterial();
-	
-	targetMaterial.color.set(param.color);
-	targetMaterial.roughness=param.roughness;
-	targetMaterial.metalness=param.metalness;
-	
-	if(param.texture_img!=null)
-	{
-		const loader = new THREE.TextureLoader();
-		targetMaterial.map = loader.load(param.texture_img);
-		targetMaterial.map.wrapS = THREE.RepeatWrapping;
-		targetMaterial.map.wrapT = THREE.RepeatWrapping;
-		targetMaterial.map.repeat.set(param.texture_repeat_x, param.texture_repeat_y);
-		targetMaterial.map.offset.set(param.texture_offset_x, param.texture_offset_y);
-	}
-
-	if(param.normalMap_img!=null)
-	{
-		const loader_normal = new THREE.TextureLoader();
-		targetMaterial.normalMap = loader_normal.load(param.normalMap_img);
-		targetMaterial.normalScale.set(param.normal_scale, param.normal_scale);  
-	}
-	
-	
-	targetMaterial.transparent= param.transparent;
-	targetMaterial.alphaHash= param.alphahash;
-	targetMaterial.opacity = param.opacity;
-	targetMaterial.needsUpdate = true;
-
-	target.traverse( function ( object ) {
-		if ( object.isMesh )
-		{	
-			object.material=targetMaterial;
-		}
-	});
-}
 
 //Revised_Materials();
 
 function Revised_Materials()
 {
 	Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
-	Material_Editor(scene.getObjectByName("Shell_Body"),param_01);
-	Material_Editor(scene.getObjectByName("Shell_Pattern_Right"),param_02);
-	Material_Editor(scene.getObjectByName("Shell_Pattern_Left"),param_02);
+	Material_Editor(scene.getObjectByName("Shell_Body"),param_02);
+	Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
+	Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_03);
 }
 
 
@@ -608,6 +571,45 @@ function ShaderTargetTextureRendering()
 		blurPlane.visible = false;
 
 	}
+}
+
+
+function Material_Editor(target,param)
+{
+	const targetMaterial= new THREE.MeshStandardMaterial();
+	
+	targetMaterial.color.set(param.color);
+	targetMaterial.roughness=param.roughness;
+	targetMaterial.metalness=param.metalness;
+	
+	if(param.texture_img!=null)
+	{
+		const loader = new THREE.TextureLoader();
+		targetMaterial.map = loader.load(param.texture_img);
+		targetMaterial.map.wrapS = THREE.RepeatWrapping;
+		targetMaterial.map.wrapT = THREE.RepeatWrapping;
+		targetMaterial.map.repeat.set(param.texture_repeat_x, param.texture_repeat_y);
+		targetMaterial.map.offset.set(param.texture_offset_x, param.texture_offset_y);
+	}
+
+	if(param.normalMap_img!=null)
+	{
+		const loader_normal = new THREE.TextureLoader();
+		targetMaterial.normalMap = loader_normal.load(param.normalMap_img);
+		targetMaterial.normalScale.set(param.normal_scale, param.normal_scale);  
+	}
+	
+	targetMaterial.transparent= param.transparent;
+	targetMaterial.alphaHash= param.alphahash;
+	targetMaterial.opacity = param.opacity;
+	targetMaterial.needsUpdate = true;
+
+	target.traverse( function ( object ) {
+		if ( object.isMesh )
+		{	
+			object.material=targetMaterial;
+		}
+	});
 }
 
 
