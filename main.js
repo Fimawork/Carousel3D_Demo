@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import {CameraManager,UpdateCameraPosition, InputEvent,Camera_Inspector,SetDefaultCameraStatus,InstFBXLoader,InstGLTFLoader,FindMataterialByName,posData} from 'https://cdn.jsdelivr.net/gh/Fimawork/threejs_tools/fx_functions.js';
+import {CameraManager,UpdateCameraPosition, InputEvent,Camera_Inspector,SetDefaultCameraStatus,InstFBXLoader,InstGLTFLoader,FindMataterialByName,posData,Material_Editor} from 'https://cdn.jsdelivr.net/gh/Fimawork/threejs_tools/fx_functions.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
@@ -517,10 +517,30 @@ function Material_Inspector(target)
 
 function Revised_Materials()
 {
-	Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
-	Material_Editor(scene.getObjectByName("Shell_Body"),param_02);
-	Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
-	Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_04);
+	//Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
+	//Material_Editor(scene.getObjectByName("Shell_Body"),param_02);
+	//Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
+	//Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_04);
+
+	scene.traverse((child)=>{if(child.name==="Shell_Top"){
+			Material_Editor(child,param_01);
+		}
+	})
+
+	scene.traverse((child)=>{if(child.name==="Shell_Body"){
+			Material_Editor(child,param_02);
+		}
+	})
+
+	scene.traverse((child)=>{if(child.name==="FC001-128-B_Body"){
+			Material_Editor(child,param_03);
+		}
+	})
+
+	scene.traverse((child)=>{if(child.name==="FC001-128-B_Body_2"){
+			Material_Editor(child,param_04);
+		}
+	})
 }
 
 
@@ -580,45 +600,6 @@ function ShaderTargetTextureRendering()
 		blurPlane.visible = false;
 
 	}
-}
-
-
-function Material_Editor(target,param)
-{
-	const targetMaterial= new THREE.MeshStandardMaterial();
-	
-	targetMaterial.color.set(param.color);
-	targetMaterial.roughness=param.roughness;
-	targetMaterial.metalness=param.metalness;
-	
-	if(param.texture_img!=null)
-	{
-		const loader = new THREE.TextureLoader();
-		targetMaterial.map = loader.load(param.texture_img);
-		targetMaterial.map.wrapS = THREE.RepeatWrapping;
-		targetMaterial.map.wrapT = THREE.RepeatWrapping;
-		targetMaterial.map.repeat.set(param.texture_repeat_x, param.texture_repeat_y);
-		targetMaterial.map.offset.set(param.texture_offset_x, param.texture_offset_y);
-	}
-
-	if(param.normalMap_img!=null)
-	{
-		const loader_normal = new THREE.TextureLoader();
-		targetMaterial.normalMap = loader_normal.load(param.normalMap_img);
-		targetMaterial.normalScale.set(param.normal_scale, param.normal_scale);  
-	}
-	
-	targetMaterial.transparent= param.transparent;
-	targetMaterial.alphaHash= param.alphahash;
-	targetMaterial.opacity = param.opacity;
-	targetMaterial.needsUpdate = true;
-
-	target.traverse( function ( object ) {
-		if ( object.isMesh )
-		{	
-			object.material=targetMaterial;
-		}
-	});
 }
 
 
