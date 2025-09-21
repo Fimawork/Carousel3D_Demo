@@ -238,7 +238,7 @@ function init()
   [
     () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_Type_A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 50)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 100)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_03",item_03, scene); resolve(); }, 150)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 150)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 200)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 250)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 300)),   
@@ -349,7 +349,7 @@ function EventListener()
         case "Space":
         //MoveModelOFF();
 
-		console.log(item_01);
+		console.log(item_03);
 
 
         break;
