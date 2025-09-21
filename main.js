@@ -86,7 +86,7 @@ let plane, blurPlane, fillPlane;
 let item_list=[];
 let btn_list=[];
 
-const hold_time=6;
+const hold_time=2.7;
 
 let item_index=0;
 
@@ -254,7 +254,7 @@ function init()
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 150)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 200)),
 
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 250)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 250)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 300)),   
 	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 450)), 
 	
@@ -508,7 +508,6 @@ function ManuRotate()
 		rotationTarget.rotation.y=0;
 	}
 	
-	console.log(rotationTarget.rotation.y);
 	//setTimeout(() => {ShowItem();}, 1000);//1000=1sec}
 
 	ShowItem(item_index);
@@ -543,6 +542,8 @@ function FocusToItem(i)
 	ShowItem(i);
 
 	item_index=i;
+
+	CameraManager(0);
 }
 
 
