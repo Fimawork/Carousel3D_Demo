@@ -53,6 +53,7 @@ const PLANE_WIDTH = 100;
 const PLANE_HEIGHT = 100;
 const CAMERA_HEIGHT = 20;//必須高於模型，否則看不到
 
+let isShowStart=false;
 let isRotateOn=false;
 
 const state = {
@@ -81,6 +82,8 @@ const hold_time=6;
 
 let item_index=0;
 
+
+
 init();
 animate();
 EventListener();
@@ -93,7 +96,7 @@ function init()
   scene = new THREE.Scene();
   //scene.background= new THREE.Color( 0xFFFFFF );
 
-  let newFOV=threeContainer.clientWidth / threeContainer.clientHeight<1.5?72:45;
+  let newFOV=threeContainer.clientWidth / threeContainer.clientHeight<1.5?70:45;
 
   camera = new THREE.PerspectiveCamera( newFOV, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000 );//非全螢幕比例設定
   renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -104,7 +107,7 @@ function init()
 
   renderer.setClearColor(0x000000, 0.0);//需加入這一條，否則看不到CSS的底圖
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.75;
+  renderer.toneMappingExposure = 0.9;
   //document.body.appendChild( renderer.domElement );
   threeContainer.appendChild( renderer.domElement );
 
@@ -233,6 +236,8 @@ function init()
 	item_06.rotation.y=divisionAngle*1;
 	scene.add(carouselManu);
 
+	carouselManu.position.x=35;//模型生成位置不在中間，等材質更新完成-->x=0
+
   ///主要物件
 	const defaultScenes = 
   [
@@ -240,14 +245,13 @@ function init()
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 100)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 150)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 200)),
+
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 250)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 300)),   
 	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 450)), 
 	
-	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 500)), 
+	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();isShowStart=true;resolve(); }, 500)), //isShowStart=true開始計算idleTime
 	
-
-	() => new Promise((resolve) => setTimeout(() => { idleTime=0 ;resolve(); },hold_time*1000)) 
 	];
 
 	async function SetupDefaultScene() 
@@ -320,7 +324,7 @@ function animate()
 
 	if ( mixer ) mixer.update( delta );
 
-	if(!isRotateOn)
+	if(!isRotateOn&&!isShowStart)
 	{
 		idleTime+=delta;
 
@@ -331,8 +335,19 @@ function animate()
 			ManuRotate();
 		}
 	}
-	
 
+	if(isShowStart)
+	{
+		if(Math.abs(carouselManu.position.x)>0.005)//絕對值
+		{
+			carouselManu.position.x = THREE.MathUtils.lerp(carouselManu.position.x,0,0.025);
+		}
+
+		else
+		{
+			isShowStart=false;
+		}
+	}
 }
 
 
