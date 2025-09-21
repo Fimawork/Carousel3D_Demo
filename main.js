@@ -258,7 +258,7 @@ function init()
 
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 90)),
 
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Knob_20250921.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 100)),   
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Knob_20250921.glb',modelPosition,modelRotation,modeScale*1.2,"item_06",item_06, scene); resolve(); }, 100)),   
 	
 	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 200)), 
 
