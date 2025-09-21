@@ -62,6 +62,8 @@ const CAMERA_HEIGHT = 20;//必須高於模型，否則看不到
 
 let isShowStart=false;
 let isRotateOn=false;
+const normal_rpm=0.018;
+let rpm=0.018;//變數，按鍵選單時可提高轉速
 
 const state = {
 	shadow: //影子
@@ -244,21 +246,25 @@ function init()
 	item_06.rotation.y=divisionAngle*1;
 	scene.add(carouselManu);
 
-	carouselManu.position.x=35;//模型生成位置不在中間，等材質更新完成-->x=0
+	carouselManu.position.x=25;//模型生成位置不在中間，等材質更新完成-->x=0
 
   ///主要物件
 	const defaultScenes = 
   [
     () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_Type_A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 50)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 100)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 150)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 200)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 60)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 70)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 80)),
 
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 250)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-A.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 300)),   
-	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 450)), 
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 90)),
+
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Knob_20250921.glb',modelPosition,modelRotation,modeScale,"item_06",item_06, scene); resolve(); }, 100)),   
 	
-	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();isShowStart=true;resolve(); }, 500)), //isShowStart=true開始計算idleTime
+	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 200)), 
+
+	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 300)), 
+	
+	() => new Promise((resolve) => setTimeout(() => { isShowStart=true;resolve(); }, 350)), //isShowStart=true開始計算idleTime
 	
 	];
 
@@ -385,7 +391,7 @@ function EventListener()
         case "Space":
         //MoveModelOFF();
 
-		//console.log(item_03);
+		console.log(item_01);
 		
 
         break;
@@ -484,13 +490,14 @@ function UpdateRotationManu()
 
 	if(quaternion_carouselManu.angleTo(quaternion_rotationTarget)>0.01)
     {
-		quaternion_carouselManu.slerp(quaternion_rotationTarget,0.015);
+		quaternion_carouselManu.slerp(quaternion_rotationTarget,rpm);
 		isRotateOn=true;
     } 
 
 	else
 	{
 		isRotateOn=false;
+		rpm=normal_rpm;//回復正常轉速
 	}
 
 	carouselManu.rotation.setFromQuaternion(quaternion_carouselManu);   
@@ -544,6 +551,10 @@ function FocusToItem(i)
 	item_index=i;
 
 	CameraManager(0);
+
+	rpm=0.1;//使用較高的轉速
+
+	idleTime=0;
 }
 
 
