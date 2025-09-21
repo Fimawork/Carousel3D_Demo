@@ -74,6 +74,7 @@
 				transform: translate(-50%,-50%);
 				white-space: nowrap;
 				user-select: none;/*限制文字被選擇*/
+				pointer-events: none;
 			}
 
 			.subTitle
@@ -91,11 +92,45 @@
 				user-select: none;
 			}
 
-			.subTitle:hover
+			.btn_panel
 			{
-				background-color: rgba(255,255,255,0.3);
+				position: absolute;
+				top: 93%;
+				left: 50%;
+				height: 12px;
+				display: flex;
+				justify-content: center;
+				transform: translate(-50%,-50%);
 			}
+			
+			.btn
+			{
+				margin-left: 6px;
+				margin-right: 6px;
+				height: 100%;
+				aspect-ratio: 1/1;		
+				border-radius: 50% 50%;
+				background-color: rgba(120, 120, 120, 1);
+			}
+			
+			
+			@media (hover: hover) 
+			{
+			  	.subTitle
+			  	{
+					cursor: pointer;
+			  	}
 
+			  	.subTitle:hover
+				{
+					background-color: rgba(255,255,255,0.3);
+				}
+
+				.btn
+				{
+					cursor: pointer;
+				}
+			}
 
 			@media screen and (max-width:1400px)/*平板(橫向)*/
 			{
@@ -164,10 +199,40 @@
 
 				.banner
 				{
+					height: 90%;
+					aspect-ratio: 1/1;
+				}
+			}
+
+			@media screen and (max-width:420px)/*手機，直*/
+			{
+
+				.banner
+				{
 					height: 50%;
 					aspect-ratio: 1/1;
 				}
 			}
+
+			@media screen and (max-width:393px)/*手機，直*/
+			{
+				.mainTitle
+				{
+					font-size: 18px;
+				}
+
+				.subTitle
+				{
+					font-size: 10px;
+				}
+
+				.banner
+				{
+					height: 50%;
+					aspect-ratio: 1/1;
+				}
+			}
+
 
 		</style>
 
@@ -188,6 +253,14 @@
 			<div id="threeContainer">
 				<div class="mainTitle">Customize Your 3D Banner</div>
 				<div class="subTitle">SEE MORE DEMO</div>
+				<div class="btn_panel">
+					<div class="btn" id="btn_0" onclick="FocusToItem(0)"></div>
+					<div class="btn" id="btn_1" onclick="FocusToItem(1)"></div>
+					<div class="btn" id="btn_2" onclick="FocusToItem(2)"></div>
+					<div class="btn" id="btn_3" onclick="FocusToItem(3)"></div>
+					<div class="btn" id="btn_4" onclick="FocusToItem(4)"></div>
+					<div class="btn" id="btn_5" onclick="FocusToItem(5)"></div>
+				</div>
 			</div>
 		</div>
 		

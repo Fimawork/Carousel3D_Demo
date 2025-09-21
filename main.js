@@ -15,6 +15,13 @@ let scene, camera, renderer, stats, mixer;
 let controls;
 let idleTime=0;
 let threeContainer = document.getElementById("threeContainer");
+let _btn_0 = document.getElementById("btn_0");
+let _btn_1 = document.getElementById("btn_1");
+let _btn_2 = document.getElementById("btn_2");
+let _btn_3 = document.getElementById("btn_3");
+let _btn_4 = document.getElementById("btn_4");
+let _btn_5 = document.getElementById("btn_5");
+
 
 const clock = new THREE.Clock();
 
@@ -77,6 +84,7 @@ let shadowGroup, renderTarget, renderTargetBlur, shadowCamera, depthMaterial, ho
 let plane, blurPlane, fillPlane;
 
 let item_list=[];
+let btn_list=[];
 
 const hold_time=6;
 
@@ -269,6 +277,7 @@ function init()
 
 	function SetupItemGroup()
 	{
+		//3D
 		item_list.push(item_01);
 		item_list.push(item_02);
 		item_list.push(item_03);
@@ -281,20 +290,32 @@ function init()
 		item_04.visible=false;
 		item_05.visible=false;
 		item_06.visible=false;
+
+		//UI按鍵
+		btn_list.push(_btn_0);
+		btn_list.push(_btn_1);
+		btn_list.push(_btn_2);
+		btn_list.push(_btn_3);
+		btn_list.push(_btn_4);
+		btn_list.push(_btn_5);
+
+		//預設第一項active
+		_btn_0.style.backgroundColor="rgba(255, 253, 253, 1)";
 	}
+
 
  	///EventListener
   	window.addEventListener( 'resize', onWindowResize );  
 
-  	window.addEventListener("pointerdown", (event) => {
+  	renderer.domElement.addEventListener("pointerdown", (event) => {
     InputEvent();
      mousePos = { x: event.clientX, y: event.clientY };
 		onPointerMove(event);//改以點擊作為Raycast判斷的時間點，改善觸控螢幕誤判狀況
 		idleTime=0;
   	});
 
-	window.addEventListener( 'pointermove', function(e) {idleTime=0;});
-  	window.addEventListener("wheel", (event) => {InputEvent();idleTime=0;});
+	renderer.domElement.addEventListener( 'pointermove', function(e) {idleTime=0;});
+  	renderer.domElement.addEventListener("wheel", (event) => {InputEvent();idleTime=0;});
 
 }
 
@@ -364,31 +385,46 @@ function EventListener()
         case "Space":
         //MoveModelOFF();
 
-		console.log(item_03);
-
+		//console.log(item_03);
+		
 
         break;
 
         case "ArrowDown":
 
        //console.log(scene);
-	   
+	   rotationTarget.rotation.y=divisionAngle*3;
 
+	   ShowItem(3);
+
+	   item_index=3;
 
         break;
 
         case "ArrowUp":
         
         //EditMode(1);
+		rotationTarget.rotation.y=divisionAngle*1;
 
+		ShowItem(1);
+
+		item_index=1;
         
         break;
 
         case "ArrowLeft":
+			rotationTarget.rotation.y=divisionAngle*2;
+			ShowItem(2)
+
+			item_index=2;
 
         break;
 
         case "ArrowRight":
+			rotationTarget.rotation.y=divisionAngle*0;
+			ShowItem(0)
+
+			item_index=0;
 
         break;
       }
@@ -466,31 +502,47 @@ function ManuRotate()
 	rotationTarget.rotation.y+=divisionAngle;
 	item_index++;
 
-
 	if(item_index>item_num-1)
 	{
 		item_index=0;
+		rotationTarget.rotation.y=0;
 	}
-
+	
+	console.log(rotationTarget.rotation.y);
 	//setTimeout(() => {ShowItem();}, 1000);//1000=1sec}
 
-	ShowItem();
+	ShowItem(item_index);
+}
 
-	function ShowItem()
+function ShowItem(index)
+{
+	for(let i=0;i<item_list.length;i++)
 	{
-		for(let i=0;i<item_list.length;i++)
+		if(i===index)
 		{
-			if(i===item_index)
-			{
-				item_list[i].visible=true;
-			}
+			//3D
+			item_list[i].visible=true;
 
-			else
-			{
-				setTimeout(() => {item_list[i].visible=false;}, 1000);//1000=1sec}
-			}
+			//UI按鍵
+			btn_list[i].style.backgroundColor="rgba(255, 253, 253, 1)";
+		}
+
+		else
+		{
+			setTimeout(() => {item_list[i].visible=false;}, 1000);//1000=1sec}
+			btn_list[i].style.backgroundColor="rgba(120,120,120,1)";
 		}
 	}
+}
+
+///輪播進度按鍵
+function FocusToItem(i)
+{
+	rotationTarget.rotation.y=divisionAngle*i;
+
+	ShowItem(i);
+
+	item_index=i;
 }
 
 
@@ -617,6 +669,7 @@ function ShaderTargetTextureRendering()
 	}
 }
 
+window.FocusToItem=FocusToItem;
 
 
 
