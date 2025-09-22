@@ -8,7 +8,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //Outline
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import {param_01,param_02,param_03,param_04} from './material_param.js';
+import {param_01,param_02,param_03,param_04,param_05,param_06} from './material_param.js';
 
 
 let scene, camera, renderer, stats, mixer;
@@ -601,23 +601,37 @@ function Revised_Materials()
 	//Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
 	//Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_04);
 
-	scene.traverse((child)=>{if(child.name==="Shell_Top"){
+	//item_01
+	item_01.traverse((child)=>{if(child.name==="Shell_Top"){
 			Material_Editor(child,param_01);
 		}
 	})
 
-	scene.traverse((child)=>{if(child.name==="Shell_Body"){
+	
+	item_01.traverse((child)=>{if(child.name==="Shell_Body"){
 			Material_Editor(child,param_02);
 		}
 	})
 
-	scene.traverse((child)=>{if(child.name==="FC001-128-B_Body"){
+	//item_02
+	item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body"){
 			Material_Editor(child,param_03);
 		}
 	})
 
-	scene.traverse((child)=>{if(child.name==="FC001-128-B_Body_2"){
+	
+	item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_2"){
 			Material_Editor(child,param_04);
+		}
+	})
+
+	item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_3"){
+			Material_Editor(child,param_05);
+		}
+	})
+
+	item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_4"){
+			Material_Editor(child,param_06);
 		}
 	})
 }
