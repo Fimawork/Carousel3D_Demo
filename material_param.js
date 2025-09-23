@@ -98,4 +98,20 @@ export const param_06 = {
     opacity:1
 };
 
+export const param_07 = {
+	color:0xffc500,
+    roughness:0.40,
+    metalness:1,
+    texture_img:'./textures/yan-ots-UuBR5kbvt4Y-unsplash.jpg',
+    texture_repeat_x:1.2,
+    texture_repeat_y:0.5,
+    texture_offset_x:0,
+    texture_offset_y:0,
+    normalMap_img:null,
+    normal_scale:0,
+    transparent:false,
+    alphahash:false,
+    opacity:1
+};
+
 

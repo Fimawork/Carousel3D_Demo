@@ -8,7 +8,7 @@ import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 //Outline
 import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
 import { VerticalBlurShader } from 'three/addons/shaders/VerticalBlurShader.js';
-import {param_01,param_02,param_03,param_04,param_05,param_06} from './material_param.js';
+import {param_01,param_02,param_03,param_04,param_05,param_06,param_07} from './material_param.js';
 
 
 let scene, camera, renderer, stats, mixer;
@@ -21,6 +21,8 @@ let _btn_2 = document.getElementById("btn_2");
 let _btn_3 = document.getElementById("btn_3");
 let _btn_4 = document.getElementById("btn_4");
 let _btn_5 = document.getElementById("btn_5");
+
+let _banner = document.getElementById("banner");
 
 
 const clock = new THREE.Clock();
@@ -92,6 +94,15 @@ const hold_time=2.7;
 
 let item_index=0;
 
+let backgroundImageSrc=
+[
+	"https://images.pexels.com/photos/7130546/pexels-photo-7130546.jpeg?_gl=1*ji9vc8*_ga*OTg5MDA4NDUyLjE3NTcxMzgwNzc.*_ga_8JE65Q40S6*czE3NTgzNDU0NDQkbzQkZzEkdDE3NTgzNDU1MDkkajU5JGwwJGgw"
+	,
+	"https://images.pexels.com/photos/2341290/pexels-photo-2341290.jpeg",
+	"https://images.pexels.com/photos/2117937/pexels-photo-2117937.jpeg"
+]
+
+let background_index=0;
 
 
 init();
@@ -251,20 +262,20 @@ function init()
   ///主要物件
 	const defaultScenes = 
   [
-    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_Type_A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 50)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 60)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 70)),
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC003.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 80)),
+    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_Type_A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 10)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 20)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 30)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC003.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 40)),
 
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 90)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 50)),
 
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Knob_20250921.glb',modelPosition,modelRotation,modeScale*1.2,"item_06",item_06, scene); resolve(); }, 100)),   
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Knob_20250921.glb',modelPosition,modelRotation,modeScale*1.2,"item_06",item_06, scene); resolve(); }, 60)),   
 	
-	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 200)), 
+	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 100)), 
 
-	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 300)), 
+	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 150)), 
 	
-	() => new Promise((resolve) => setTimeout(() => { isShowStart=true;resolve(); }, 350)), //isShowStart=true開始計算idleTime
+	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 200)), //isShowStart=true開始計算idleTime
 	
 	];
 
@@ -291,6 +302,7 @@ function init()
 		item_list.push(item_05);
 		item_list.push(item_06);
 
+		item_01.visible=true;
 		item_02.visible=false;
 		item_03.visible=false;
 		item_04.visible=false;
@@ -351,7 +363,7 @@ function animate()
 
 	if ( mixer ) mixer.update( delta );
 
-	if(!isRotateOn&&!isShowStart)
+	if(!isRotateOn&&isShowStart)
 	{
 		idleTime+=delta;
 
@@ -360,19 +372,6 @@ function animate()
 			idleTime=0;
 
 			ManuRotate();
-		}
-	}
-
-	if(isShowStart)
-	{
-		if(Math.abs(carouselManu.position.x)>0.005)//絕對值
-		{
-			carouselManu.position.x = THREE.MathUtils.lerp(carouselManu.position.x,0,0.025);
-		}
-
-		else
-		{
-			isShowStart=false;
 		}
 	}
 }
@@ -484,6 +483,24 @@ function RaycastFunction()
 	}
 }
 
+function SceneFadeIn()
+{
+	if(!isShowStart)
+	{
+		requestAnimationFrame( SceneFadeIn );
+	}
+	
+	if(Math.abs(carouselManu.position.x)>0.01)//絕對值
+	{
+		carouselManu.position.x = THREE.MathUtils.lerp(carouselManu.position.x,0,0.025);
+	}
+
+	if(Math.abs(carouselManu.position.x)<=0.1)
+	{
+		isShowStart=true;
+	}
+}
+
 function UpdateRotationManu()
 {
 	quaternion_rotationTarget.setFromEuler(rotationTarget.rotation);
@@ -522,39 +539,50 @@ function ManuRotate()
 
 function ShowItem(index)
 {
-	for(let i=0;i<item_list.length;i++)
+	try 
+  	{
+		item_list[index].visible=true;
+		//UI按鍵
+		btn_list[index].style.backgroundColor="rgba(255, 255, 255, 1)";
+
+		for(let i=0;i<item_list.length;i++)
+		{
+			if(i!=index)
+			{
+				setTimeout(() => {item_list[i].visible=false;}, 1000);//1000=1sec}
+				btn_list[i].style.backgroundColor="rgba(210,210,210,0.3)";
+			}
+		}
+	}
+
+	catch (error) 
+  	{
+  	  	console.log(`發生錯誤.${error}`);
+  	}
+
+	finally
 	{
-		if(i===index)
-		{
-			//3D
-			item_list[i].visible=true;
-
-			//UI按鍵
-			btn_list[i].style.backgroundColor="rgba(255, 253, 253, 1)";
-		}
-
-		else
-		{
-			setTimeout(() => {item_list[i].visible=false;}, 1000);//1000=1sec}
-			btn_list[i].style.backgroundColor="rgba(120,120,120,1)";
-		}
+		item_list[index].visible=true;
 	}
 }
 
 ///輪播進度按鍵
 function FocusToItem(i)
 {
-	rotationTarget.rotation.y=divisionAngle*i;
+	if(!isRotateOn)
+	{
+		ShowItem(i);
 
-	ShowItem(i);
+		item_index=i;
 
-	item_index=i;
+		CameraManager(0);
 
-	CameraManager(0);
+		rpm=0.1;//使用較高的轉速
 
-	rpm=0.1;//使用較高的轉速
+		rotationTarget.rotation.y=divisionAngle*i;
 
-	idleTime=0;
+		idleTime=0;
+	}
 }
 
 
@@ -634,6 +662,16 @@ function Revised_Materials()
 			Material_Editor(child,param_06);
 		}
 	})
+
+	item_02.traverse((child)=>{if(child.name==="FC001-128-B_BottomEdge_A"){
+			Material_Editor(child,param_07);
+		}
+	})
+
+	item_02.traverse((child)=>{if(child.name==="FC001-128-B_BottomEdge_B"){
+			Material_Editor(child,param_07);
+		}
+	})
 }
 
 
@@ -695,7 +733,20 @@ function ShaderTargetTextureRendering()
 	}
 }
 
-window.FocusToItem=FocusToItem;
+function BackgroundDemo()
+{
+	background_index++;
 
+	if(background_index>2)
+	{
+		background_index=0;
+	}
+
+	_banner.style.backgroundImage = `url('${backgroundImageSrc[background_index]}')`;
+}
+
+
+window.FocusToItem=FocusToItem;
+window.BackgroundDemo=BackgroundDemo;
 
 
