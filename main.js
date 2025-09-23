@@ -272,9 +272,9 @@ function init()
 	
 	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 100)), 
 
-	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 150)), 
+	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 300)), 
 	
-	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 200)), //isShowStart=true開始計算idleTime
+	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 350)), //isShowStart=true開始計算idleTime
 	
 	];
 
@@ -623,54 +623,58 @@ function Material_Inspector(target)
 
 function Revised_Materials()
 {
-	//Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
-	//Material_Editor(scene.getObjectByName("Shell_Body"),param_02);
-	//Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
-	//Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_04);
+	try 
+  	{
+		//item_01
+		item_01.traverse((child)=>{if(child.name==="Shell_Top"){
+				Material_Editor(child,param_01);
+			}
+		})
 
-	//item_01
-	item_01.traverse((child)=>{if(child.name==="Shell_Top"){
-			Material_Editor(child,param_01);
-		}
-	})
 
-	
-	item_01.traverse((child)=>{if(child.name==="Shell_Body"){
-			Material_Editor(child,param_02);
-		}
-	})
+		item_01.traverse((child)=>{if(child.name==="Shell_Body"){
+				Material_Editor(child,param_02);
+			}
+		})
 
-	//item_02
-	item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body"){
-			Material_Editor(child,param_03);
-		}
-	})
+		//item_02
+		item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body"){
+				Material_Editor(child,param_03);
+			}
+		})
 
-	
-	item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_2"){
-			Material_Editor(child,param_04);
-		}
-	})
 
-	item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_3"){
-			Material_Editor(child,param_05);
-		}
-	})
+		item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_2"){
+				Material_Editor(child,param_04);
+			}
+		})
 
-	item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_4"){
-			Material_Editor(child,param_06);
-		}
-	})
+		item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_3"){
+				Material_Editor(child,param_05);
+			}
+		})
 
-	item_02.traverse((child)=>{if(child.name==="FC001-128-B_BottomEdge_A"){
-			Material_Editor(child,param_07);
-		}
-	})
+		item_02.traverse((child)=>{if(child.name==="FC001-128-B_Body_4"){
+				Material_Editor(child,param_06);
+			}
+		})
 
-	item_02.traverse((child)=>{if(child.name==="FC001-128-B_BottomEdge_B"){
-			Material_Editor(child,param_07);
-		}
-	})
+		item_02.traverse((child)=>{if(child.name==="FC001-128-B_BottomEdge_A"){
+				Material_Editor(child,param_07);
+			}
+		})
+
+		item_02.traverse((child)=>{if(child.name==="FC001-128-B_BottomEdge_B"){
+				Material_Editor(child,param_07);
+			}
+		})
+	}
+
+	catch (error) 
+  	{
+  	  	console.log(`發生錯誤.${error}`);
+  	}
+
 }
 
 
