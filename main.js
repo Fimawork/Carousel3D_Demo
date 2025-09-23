@@ -274,7 +274,7 @@ function init()
 
 	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 300)), 
 	
-	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 350)), //isShowStart=true開始計算idleTime
+	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 400)), //isShowStart=true開始計算idleTime
 	
 	];
 
@@ -674,7 +674,6 @@ function Revised_Materials()
   	{
   	  	console.log(`發生錯誤.${error}`);
   	}
-
 }
 
 
