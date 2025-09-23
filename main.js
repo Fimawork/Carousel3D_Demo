@@ -96,10 +96,9 @@ let item_index=0;
 
 let backgroundImageSrc=
 [
-	"https://images.pexels.com/photos/7130546/pexels-photo-7130546.jpeg?_gl=1*ji9vc8*_ga*OTg5MDA4NDUyLjE3NTcxMzgwNzc.*_ga_8JE65Q40S6*czE3NTgzNDU0NDQkbzQkZzEkdDE3NTgzNDU1MDkkajU5JGwwJGgw"
-	,
+	"https://images.pexels.com/photos/7130546/pexels-photo-7130546.jpeg?_gl=1*ji9vc8*_ga*OTg5MDA4NDUyLjE3NTcxMzgwNzc.*_ga_8JE65Q40S6*czE3NTgzNDU0NDQkbzQkZzEkdDE3NTgzNDU1MDkkajU5JGwwJGgw",
 	"https://images.pexels.com/photos/2341290/pexels-photo-2341290.jpeg",
-	"https://images.pexels.com/photos/2117937/pexels-photo-2117937.jpeg"
+	"https://images.pexels.com/photos/1487835/pexels-photo-1487835.jpeg"
 ]
 
 let background_index=0;
