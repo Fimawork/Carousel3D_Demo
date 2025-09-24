@@ -497,6 +497,18 @@ function SceneFadeIn()
 	if(Math.abs(carouselManu.position.x)<=0.1)
 	{
 		isShowStart=true;
+
+		//貼圖檢查機制，若無貼圖則重新執行材質更換函式
+		scene.getObjectByName("Shell_Top").traverse( function ( object ) {
+			if ( object.isMesh )
+			{
+				if(!object.material.map)
+				{
+					Revised_Materials();
+					console.log("重新載入貼圖");
+				}
+			}
+		})
 	}
 }
 
