@@ -287,7 +287,7 @@ function init()
 	
 	() => new Promise((resolve) => setTimeout(() => { ChechMaterialUpdated();resolve(); }, 500)), 
 
-	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();;resolve(); }, 600)),//isShowStart=true開始計算idleTime
+	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 550)),//isShowStart=true開始計算idleTime
 	
 	];
 
@@ -401,6 +401,8 @@ function EventListener()
 
         case "Space":
         //MoveModelOFF();
+
+		console.log(scene.getObjectByName("Shell_Top"));
 
         break;
 
@@ -583,12 +585,15 @@ function FocusToItem(i)
 
 function ReplaceMaterial(targetObject,targetMaterial)
 {
-    targetObject.traverse( function ( object ) {
-		if ( object.isMesh )
-		{
-			object.material=targetMaterial;
-		}
-	})
+	if(targetObject!=null)
+	{
+		targetObject.traverse( function ( object ) {
+			if ( object.isMesh )
+			{
+				object.material=targetMaterial;
+			}
+		})
+	}
 }
 
 function SetupMaterial()
@@ -610,31 +615,31 @@ function SetupMaterial()
 
 //Revised_Materials();
 
-function Revised_Materials()
+async function Revised_Materials()
 {
-	const TargetMesh = 
-  	[
-    	() => new Promise((resolve) => setTimeout(() => { ReplaceMaterial(scene.getObjectByName("Shell_Top"),Material_01); resolve(); }, 10)),
-		() => new Promise((resolve) => setTimeout(() => { ReplaceMaterial(scene.getObjectByName("Shell_Body"),Material_02); resolve(); }, 20)),
-		() => new Promise((resolve) => setTimeout(() => { ReplaceMaterial(scene.getObjectByName("FC001-128-B_Body"),Material_03); resolve(); }, 30)),
-		() => new Promise((resolve) => setTimeout(() => { ReplaceMaterial(scene.getObjectByName("FC001-128-B_Body_2"),Material_04); resolve(); }, 40)),
-		() => new Promise((resolve) => setTimeout(() => { ReplaceMaterial(scene.getObjectByName("FC001-128-B_Body_3"),Material_05); resolve(); }, 50)),
-		() => new Promise((resolve) => setTimeout(() => { ReplaceMaterial(scene.getObjectByName("FC001-128-B_Body_4"),Material_06); resolve(); }, 60)),   
-		() => new Promise((resolve) => setTimeout(() => { ReplaceMaterial(scene.getObjectByName("FC001-128-B_BottomEdge_A"),Material_07);resolve(); }, 70)), 
-		() => new Promise((resolve) => setTimeout(() => { ReplaceMaterial(scene.getObjectByName("FC001-128-B_BottomEdge_B"),Material_07);resolve(); }, 80)), 
-	];
-
-	async function UpdateTargetMesh() 
+	try 
   	{
-		for (const task of TargetMesh) 
-    	{
-			await task(); // 確保每個任務依次完成
-		}
-		
-    	console.log('All Material Revised');
+		await ReplaceMaterial(scene.getObjectByName("Shell_Top"),Material_01);
+
+		await ReplaceMaterial(scene.getObjectByName("Shell_Body"),Material_02);
+
+		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_Body"),Material_03);
+
+		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_Body_2"),Material_04);
+
+		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_Body_3"),Material_05);
+
+		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_Body_4"),Material_06);
+
+		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_BottomEdge_A"),Material_07);
+
+		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_BottomEdge_B"),Material_07);
 	}
 
-	UpdateTargetMesh();
+	catch (error) 
+  	{
+  	  	console.log(`發生錯誤.${error}`);
+  	}
 }
 
 
