@@ -272,12 +272,12 @@ function init()
   ///主要物件
 	const defaultScenes = 
   [
-    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_Type_A.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 10)),
+    () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 10)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 20)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 30)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC003.glb',modelPosition,modelRotation,modeScale,"item_04",item_04, scene); resolve(); }, 40)),
 
-	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 50)),
+	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_Type_A.glb',modelPosition,modelRotation,modeScale,"item_05",item_05, scene); resolve(); }, 50)),
 
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Knob_20250921.glb',modelPosition,modelRotation,modeScale*1.2,"item_06",item_06, scene); resolve(); }, 60)),   
 	
@@ -519,19 +519,32 @@ function UpdateRotationManu()
 
 function ManuRotate()
 {
-	CameraManager(0);
-	rotationTarget.rotation.y+=divisionAngle;
-	item_index++;
+	try 
+  	{
+		CameraManager(0);
+		rotationTarget.rotation.y+=divisionAngle;
+		item_index++;
 
-	if(item_index>item_num-1)
-	{
-		item_index=0;
-		rotationTarget.rotation.y=0;
+		if(item_index>item_num-1)
+		{
+			item_index=0;
+			rotationTarget.rotation.y=0;
+		}
+
+		//setTimeout(() => {ShowItem();}, 1000);//1000=1sec}
+
+		ShowItem(item_index);
 	}
-	
-	//setTimeout(() => {ShowItem();}, 1000);//1000=1sec}
 
-	ShowItem(item_index);
+	catch (error) 
+  	{
+  	  	console.log(`發生錯誤.${error}`);
+  	}
+
+	finally
+	{
+		ShowItem(item_index);
+	}
 }
 
 function ShowItem(index)
@@ -566,19 +579,32 @@ function ShowItem(index)
 ///輪播進度按鍵
 function FocusToItem(i)
 {
-	if(!isRotateOn)
+	try 
+  	{
+		if(!isRotateOn)
+		{
+			ShowItem(i);
+
+			item_index=i;
+
+			CameraManager(0);
+
+			rpm=0.05;//使用較高的轉速
+
+			rotationTarget.rotation.y=divisionAngle*i;
+
+			idleTime=0;
+		}
+	}
+
+	catch (error) 
+  	{
+  	  	console.log(`發生錯誤.${error}`);
+  	}
+
+	finally
 	{
 		ShowItem(i);
-
-		item_index=i;
-
-		CameraManager(0);
-
-		rpm=0.1;//使用較高的轉速
-
-		rotationTarget.rotation.y=divisionAngle*i;
-
-		idleTime=0;
 	}
 }
 
