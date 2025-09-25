@@ -633,25 +633,25 @@ function Material_Inspector(target)
 
 //Revised_Materials();
 
-function Revised_Materials()
+async function Revised_Materials()
 {
 	try 
   	{
-		Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
+		await Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
 
-		Material_Editor(scene.getObjectByName("Shell_Body"),param_02);
+		await Material_Editor(scene.getObjectByName("Shell_Body"),param_02);
 
-		Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
+		await Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
 
-		Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_04);
+		await Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_04);
 
-		Material_Editor(scene.getObjectByName("FC001-128-B_Body_3"),param_05);
+		await Material_Editor(scene.getObjectByName("FC001-128-B_Body_3"),param_05);
 
-		Material_Editor(scene.getObjectByName("FC001-128-B_Body_4"),param_06);
+		await Material_Editor(scene.getObjectByName("FC001-128-B_Body_4"),param_06);
 
-		Material_Editor(scene.getObjectByName("FC001-128-B_BottomEdge_A"),param_07);
+		await Material_Editor(scene.getObjectByName("FC001-128-B_BottomEdge_A"),param_07);
 
-		Material_Editor(scene.getObjectByName("FC001-128-B_BottomEdge_B"),param_07);
+		await Material_Editor(scene.getObjectByName("FC001-128-B_BottomEdge_B"),param_07);
 	}
 
 	catch (error) 
