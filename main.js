@@ -285,7 +285,7 @@ function init()
 
 	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 450)), 
 	
-	() => new Promise((resolve) => setTimeout(() => { ChechMaterialUpdated();resolve(); }, 500)), 
+	//() => new Promise((resolve) => setTimeout(() => { ChechMaterialUpdated();resolve(); }, 500)), 
 
 	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 550)),//isShowStart=true開始計算idleTime
 	
