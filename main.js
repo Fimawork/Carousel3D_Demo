@@ -266,6 +266,7 @@ function init()
 
 	carouselManu.position.x=25;//模型生成位置不在中間，等材質更新完成-->x=0
 
+	//設定新材質球
 	SetupMaterial();
 
   ///主要物件
@@ -284,18 +285,19 @@ function init()
 
 	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 450)), 
 	
-	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 600)), //isShowStart=true開始計算idleTime
+	() => new Promise((resolve) => setTimeout(() => { ChechMaterialUpdated();resolve(); }, 500)), //isShowStart=true開始計算idleTime
 	
 	];
 
 	async function SetupDefaultScene() 
-  {
+  	{
 		for (const task of defaultScenes) 
-    {
+    	{
 			await task(); // 確保每個任務依次完成
 		}
 		
-    console.log('All scenes loaded');
+    	console.log('All scenes loaded');
+		SceneFadeIn();
 	}
 
 	SetupDefaultScene();
@@ -509,16 +511,7 @@ function SceneFadeIn()
 		isShowStart=true;
 
 		//貼圖檢查機制，若無貼圖則重新執行材質更換函式
-		scene.getObjectByName("Shell_Top").traverse( function ( object ) {
-			if ( object.isMesh )
-			{
-				if(!object.material.map)
-				{
-					Revised_Materials();
-					console.log("重新載入貼圖");
-				}
-			}
-		})
+		ChechMaterialUpdated();
 	}
 }
 
@@ -640,22 +633,6 @@ async function Revised_Materials()
 {
 	try 
   	{
-		//await Material_Editor(scene.getObjectByName("Shell_Top"),param_01);
-
-		//await Material_Editor(scene.getObjectByName("Shell_Body"),param_02);
-
-		//await Material_Editor(scene.getObjectByName("FC001-128-B_Body"),param_03);
-
-		//await Material_Editor(scene.getObjectByName("FC001-128-B_Body_2"),param_04);
-
-		//await Material_Editor(scene.getObjectByName("FC001-128-B_Body_3"),param_05);
-
-		//await Material_Editor(scene.getObjectByName("FC001-128-B_Body_4"),param_06);
-
-		//await Material_Editor(scene.getObjectByName("FC001-128-B_BottomEdge_A"),param_07);
-
-		//await Material_Editor(scene.getObjectByName("FC001-128-B_BottomEdge_B"),param_07);
-
 		await ReplaceMaterial(scene.getObjectByName("Shell_Top"),Material_01);
 
 		await ReplaceMaterial(scene.getObjectByName("Shell_Body"),Material_02);
@@ -670,8 +647,7 @@ async function Revised_Materials()
 
 		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_BottomEdge_A"),Material_07);
 
-		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_BottomEdge_B"),Material_08);
-
+		await ReplaceMaterial(scene.getObjectByName("FC001-128-B_BottomEdge_B"),Material_07);
 	}
 
 	catch (error) 
@@ -779,6 +755,29 @@ function Material_Editor(targetMaterial,param)
 	targetMaterial.alphaHash= param.alphahash;
 	targetMaterial.opacity = param.opacity;
 	targetMaterial.needsUpdate = true;
+}
+
+function ChechMaterialUpdated()
+{
+	scene.getObjectByName("Shell_Top").traverse( function ( object ) {
+		if ( object.isMesh )
+		{
+			if(!object.material.map)
+			{
+				Revised_Materials();
+			}
+		}
+	})
+
+	scene.getObjectByName("FC001-128-B_Body").traverse( function ( object ) {
+		if ( object.isMesh )
+		{
+			if(!object.material.map)
+			{
+				Revised_Materials();
+			}
+		}
+	})
 }
 
 window.FocusToItem=FocusToItem;
