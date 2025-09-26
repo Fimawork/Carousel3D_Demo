@@ -599,7 +599,7 @@ function FocusToItem(i)
 
 			CameraManager(0);
 
-			rpm=0.05;//使用較高的轉速
+			rpm=0.08;//使用較高的轉速
 
 			rotationTarget.rotation.y=divisionAngle*i;
 
