@@ -271,7 +271,10 @@ function init()
 
   ///主要物件
 	const defaultScenes = 
+
   [
+	() => new Promise((resolve) => setTimeout(() => { threeContainer.style.cssText = `filter: blur(6px);`; resolve(); }, 0)),
+
     () => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/Pull_128_20500921.glb',modelPosition,modelRotation,modeScale,"item_01",item_01, scene); resolve(); }, 10)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC001-128-B.glb',modelPosition,modelRotation,modeScale,"item_02",item_02, scene); resolve(); }, 20)),
 	() => new Promise((resolve) => setTimeout(() => { InstGLTFLoader('./models/FC005_128.glb',modelPosition,modelRotation,modeScale*0.8,"item_03",item_03, scene); resolve(); }, 30)),
@@ -283,11 +286,17 @@ function init()
 	
 	() => new Promise((resolve) => setTimeout(() => { SetupItemGroup();resolve(); }, 100)), 
 
-	//() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 450)), 
-	
-	//() => new Promise((resolve) => setTimeout(() => { ChechMaterialUpdated();resolve(); }, 500)), 
+	() => new Promise((resolve) => setTimeout(() => { threeContainer.style.cssText = `filter: blur(4.5px);`;resolve(); }, 250)), 
 
-	//() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 600)),//isShowStart=true開始計算idleTime
+	() => new Promise((resolve) => setTimeout(() => { Revised_Materials();resolve(); }, 450)), 
+
+	() => new Promise((resolve) => setTimeout(() => { threeContainer.style.cssText = `filter: blur(3px);`;resolve(); }, 500)), 
+	
+	() => new Promise((resolve) => setTimeout(() => { SceneFadeIn();resolve(); }, 600)),//isShowStart=true開始計算idleTime
+
+	() => new Promise((resolve) => setTimeout(() => { threeContainer.style.cssText = `filter: blur(1.5px);`;resolve(); }, 750)), 
+
+	() => new Promise((resolve) => setTimeout(() => { threeContainer.style.cssText = `filter: blur(0px);`;resolve(); }, 1000)),
 	
 	];
 
@@ -300,8 +309,6 @@ function init()
 		
     	console.log('All scenes loaded');
 
-		SceneFadeIn();
-		Revised_Materials();
 	}
 
 	SetupDefaultScene();
