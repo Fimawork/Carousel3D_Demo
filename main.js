@@ -611,11 +611,6 @@ function FocusToItem(i)
   	{
   	  	console.log(`發生錯誤.${error}`);
   	}
-
-	finally
-	{
-		ShowItem(i);
-	}
 }
 
 
