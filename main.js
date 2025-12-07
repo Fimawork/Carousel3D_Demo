@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import {CameraManager,UpdateCameraPosition, InputEvent,Camera_Inspector,SetDefaultCameraStatus,InstFBXLoader,InstGLTFLoader,FindMataterialByName,posData} from 'https://cdn.jsdelivr.net/gh/Fimawork/threejs_tools/fx_functions.js';
-import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import {CameraManager,UpdateCameraPosition, InputEvent,Camera_Inspector,SetDefaultCameraStatus,InstFBXLoader,InstGLTFLoader,FindMataterialByName,posData,LoadHDRWithPMREM} from 'https://cdn.jsdelivr.net/gh/Fimawork/threejs_tools@v1.2/fx_functions.js';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 //Outline
@@ -114,10 +113,6 @@ let Material_07= new THREE.MeshStandardMaterial();
 
 init();
 animate();
-EventListener();
-//Camera_Inspector(camera,controls);
-
-//Material_Inspector(item_01);
 
 function init()
 {
@@ -155,18 +150,8 @@ function init()
   controls.zoomSpeed=0.5;
   controls.update();
 
-  ///hdri 環境光源
-  new RGBELoader()
-		.setPath( 'textures/hdri/' )
-		.load( 'brown_photostudio_02_1k.hdr', function ( texture ) {
-
-		texture.mapping = THREE.EquirectangularReflectionMapping;
-
-		//scene.background = texture;
-		scene.environment = texture;
-
-	} );
-
+  	///hdri 環境光源
+	LoadHDRWithPMREM('./textures/hdri/brown_photostudio_02_1k.hdr',scene,renderer) 
 
 	///影子工具
   	// the container, if you need to move the plane just move this
@@ -398,56 +383,6 @@ function animate()
 	}
 }
 
-
-
-
-
-function EventListener()
-{
-  window.addEventListener("keydown",function (event) {
-
-      switch (event.code) 
-      {
-
-        case "Space":
-        //MoveModelOFF();
-
-		console.log(scene.getObjectByName("Shell_Top"));
-
-        break;
-
-        case "ArrowDown":
-
-       //console.log(scene);
-
-        break;
-
-        case "ArrowUp":
-        
-        //EditMode(1);
-        
-        break;
-
-        case "ArrowLeft":
-
-        break;
-
-        case "ArrowRight":
-
-
-        break;
-      }
-      
-  });
-
-  ///滑鼠點擊accessory可啟用模型移動面板
-  window.addEventListener("pointerdown", function(e) {
-    
-  });
-
-
- 
-}
 
 //////Raycaster工具//////
 function onPointerMove( event ) 

@@ -118,6 +118,21 @@
 				border-color: rgba(255, 255, 255,1);
 				background-color: rgba(210, 210, 210, 0.3);
 			}
+
+			.fimawork_logo
+			{
+				position:absolute;
+				left: 50%;
+				top: 50%;
+				height: 9%;
+				aspect-ratio: 192/33;
+				background-image: url(./images/fimawork_logo_C_white.png);
+				background-size: 100% 100%;
+				opacity: 1;
+				z-index: 99;
+				user-select: none;
+				transform: translate(-50%,-50%);
+			}
 			
 			
 			@media (hover: hover) 
@@ -169,6 +184,11 @@
 					font-size: 30px;
 				}
 
+				.fimawork_logo
+				{
+					height: 9%;
+				}
+
 			}
 
 			@media screen and (max-width:896px)/*手機iphone 12 pro*/
@@ -193,6 +213,11 @@
 				.btn_panel
 				{
 					height: 10px;
+				}
+
+				.fimawork_logo
+				{
+					height: 5.4%;
 				}
 			}
 
@@ -250,8 +275,8 @@
 		<script type="importmap">
 			{
 			  "imports": {
-				"three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-				"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+				"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+				"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
 			  }
 			}
 		</script>
@@ -262,7 +287,7 @@
 		<div class="sample_background"></div>
 		<div id="banner">
 			<div id="threeContainer"></div>
-			<div class="mainTitle">Carousel 3D Banner</div>
+			<div class="mainTitle"></div>
 				<div class="subTitle" onclick="BackgroundDemo()">SEE MORE DEMO</div>
 				<div class="btn_panel">
 					<div class="btn" id="btn_0" onclick="FocusToItem(0)"></div>
@@ -273,6 +298,8 @@
 					<div class="btn" id="btn_5" onclick="FocusToItem(5)"></div>
 				</div>
 		</div>
+
+		<div class="fimawork_logo"></div>	
 		
 		<script src="https://kit.fontawesome.com/28b78de879.js" crossorigin="anonymous"></script>
 		<script type="module" src="main.js"></script>
